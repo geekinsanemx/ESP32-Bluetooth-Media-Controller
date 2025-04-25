@@ -2,6 +2,9 @@
 
 A customizable Bluetooth media controller based on Waveshare ESP32-S3-Zero, inspired by the Sony RM-MC25C controller design with modern enhancements.
 
+![IMG_6219](https://github.com/user-attachments/assets/ef3c9c69-658e-4597-95cd-5974ae673c5a | width=100)
+
+
 ## Project Overview
 
 This project transforms a Waveshare ESP32-S3-Zero into a powerful Bluetooth media controller with:
