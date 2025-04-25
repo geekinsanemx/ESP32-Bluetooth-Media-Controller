@@ -11,11 +11,11 @@ Adafruit_NeoPixel pixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 #define GREEN_LED 4
 
 // Button Pins (using INPUT_PULLUP)
-#define DOWN       12  // Modifier button AND wake-up button (GPIO12)
-#define PLAY        8
-#define STOP        9
+#define DOWN        7  // Modifier button
+#define PLAY        9
 #define BACK       10
 #define NEXT       11
+#define STOP       12  // wake-up button (GPIO12)
 
 BleKeyboard bleKeyboard("RM-MC25C Media Controller", "Waveshare", 100);
 

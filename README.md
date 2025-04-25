@@ -51,11 +51,11 @@ DOWN button → Charger Module "PWR" pin
 ### Button Connections (All using INPUT_PULLUP)
 | Button | GPIO | Function               |
 |--------|------|------------------------|
-| DOWN   | 12   | Modifier/Wake-up/Power |
-| PLAY   | 8    | Play/Pause             |
-| STOP   | 9    | Stop                   |
+| DOWN   | 7    | Modifier/Power         |
+| PLAY   | 9    | Play/Pause             |
 | BACK   | 10   | Previous Track/Vol-    |
 | NEXT   | 11   | Next Track/Vol+        |
+| STOP   | 12   | Stop/Wake-up           |
 
 ### RGB LED Connections
 - Red LED: GPIO 6
