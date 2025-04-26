@@ -20,8 +20,9 @@ Adafruit_NeoPixel pixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 BleKeyboard bleKeyboard("RM-MC25C Media Controller", "Waveshare", 100);
 
 // Deep sleep variables
-#define DEEP_SLEEP_TIMEOUT 120000 // 2 minutes in milliseconds
-unsigned long lastConnectionTime = 0;
+#define DEEP_SLEEP_TIMEOUT 120000 // 2 minutes in milliseconds (disconnected)
+#define INACTIVITY_TIMEOUT 1800000 // 30 minutes in milliseconds (connected)
+unsigned long lastActivityTime = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -34,12 +35,12 @@ void setup() {
 
   initializeComponents();
   
-  // Configure wakeup - using GPIO12 (DOWN button)
+  // Configure wakeup - using GPIO12 (STOP button)
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);
   
   bleKeyboard.begin();
   Serial.println("Initialized - Waiting for Bluetooth connection...");
-  lastConnectionTime = millis();
+  lastActivityTime = millis();
 }
 
 void ledWakeupFeedback() {
@@ -67,7 +68,7 @@ void initializeComponents() {
   pixel.show();
 
   // Initialize buttons - special handling for GPIO12
-  pinMode(DOWN, INPUT_PULLUP);  // Wake-up button
+  pinMode(DOWN, INPUT_PULLUP);  // Modifier button
   pinMode(PLAY, INPUT_PULLUP);
   pinMode(STOP, INPUT_PULLUP);
   pinMode(BACK, INPUT_PULLUP);
@@ -97,7 +98,7 @@ void handleConnectedState() {
   
   if (!isConnected) {
     isConnected = true;
-    lastConnectionTime = millis();
+    lastActivityTime = millis(); // Reset activity timer on connection
     Serial.println("Bluetooth connected!");
   }
   
@@ -113,6 +114,11 @@ void handleConnectedState() {
   }
   
   checkButtons();
+  
+  // Check for inactivity timeout (30 minutes)
+  if (millis() - lastActivityTime > INACTIVITY_TIMEOUT) {
+    enterDeepSleep();
+  }
 }
 
 void handleDisconnectedState() {
@@ -124,8 +130,8 @@ void handleDisconnectedState() {
     lastBlink = millis();
   }
   
-  // Enter deep sleep after timeout
-  if(millis() - lastConnectionTime > DEEP_SLEEP_TIMEOUT) {
+  // Enter deep sleep after timeout (2 minutes)
+  if(millis() - lastActivityTime > DEEP_SLEEP_TIMEOUT) {
     enterDeepSleep();
   }
 }
@@ -156,28 +162,28 @@ void enterDeepSleep() {
 void checkButtons() {
   checkButton(PLAY, "PLAY", [](){
     bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   });
   
   checkButton(STOP, "STOP", [](){
     bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   });
   
   checkButton(BACK, "BACK", "VOL_DOWN", [](){
     bleKeyboard.write(KEY_MEDIA_PREVIOUS_TRACK);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   }, [](){
     bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   });
   
   checkButton(NEXT, "NEXT", "VOL_UP", [](){
     bleKeyboard.write(KEY_MEDIA_NEXT_TRACK);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   }, [](){
     bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
-    lastConnectionTime = millis(); // Reset sleep timer
+    lastActivityTime = millis(); // Reset activity timer
   });
 }
 
