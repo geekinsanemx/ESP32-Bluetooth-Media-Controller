@@ -12,16 +12,16 @@ Adafruit_NeoPixel pixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 // Button Pins (using INPUT_PULLUP)
 #define DOWN        7  // Modifier button
-#define PLAY        9
 #define BACK       10
 #define NEXT       11
 #define STOP       12  // wake-up button (GPIO12)
+#define PLAY       13
 
 BleKeyboard bleKeyboard("RM-MC25C Media Controller", "Waveshare", 100);
 
 // Deep sleep variables
 #define DEEP_SLEEP_TIMEOUT 120000 // 2 minutes in milliseconds (disconnected)
-#define INACTIVITY_TIMEOUT 1800000 // 30 minutes in milliseconds (connected)
+#define INACTIVITY_TIMEOUT 300000 // 5 minutes in milliseconds (connected)
 unsigned long lastActivityTime = 0;
 
 void setup() {
@@ -115,7 +115,7 @@ void handleConnectedState() {
   
   checkButtons();
   
-  // Check for inactivity timeout (30 minutes)
+  // Check for inactivity timeout (5 minutes)
   if (millis() - lastActivityTime > INACTIVITY_TIMEOUT) {
     enterDeepSleep();
   }
@@ -189,7 +189,7 @@ void checkButtons() {
 
 // For buttons without secondary action
 void checkButton(int button, const char* name, void (*action)()) {
-  static bool lastStates[12] = {false};
+  static bool lastStates[14] = {false};
   bool currentState = (digitalRead(button) == LOW);
   
   if(currentState != lastStates[button]) {
@@ -213,7 +213,7 @@ void checkButton(int button, const char* name, void (*action)()) {
 // For buttons with secondary action (when DOWN is pressed)
 void checkButton(int button, const char* name, const char* altName, 
                 void (*action)(), void (*altAction)()) {
-  static bool lastStates[12] = {false};
+  static bool lastStates[14] = {false};
   bool currentState = (digitalRead(button) == LOW);
   bool downPressed = (digitalRead(DOWN) == LOW);
   
