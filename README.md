@@ -63,6 +63,58 @@ DOWN button → Charger Module "PWR" pin
 - Green LED: GPIO 4
 - NeoPixel: GPIO 21
 
+### Troubleshooting: False Wake-Ups from Deep Sleep
+
+If your ESP32 randomly wakes from deep sleep shortly after entering it (especially when using GPIO12 as the wake-up trigger), follow these steps to resolve electrical noise issues:
+
+Recommended Fix
+Hardware Modifications (Required for GPIO12):
+
+Add a 10kΩ pull-up resistor between GPIO12 and 3.3V.
+
+Add a 100nF ceramic capacitor between GPIO12 and GND (for debouncing).
+
+Circuit Diagram:
+```
+[3.3V] ----[10kΩ]----.
+                     |
+GPIO12 --------------+
+                     |
+                    [ ] STOP button (to GND)
+                     |
+                   [100nF]
+                     |
+                   [GND]
+```
+
+Software Configuration:
+In setup(), add these lines to stabilize the wake-up pin:
+
+```
+void setup() {
+...
+  pinMode(STOP, INPUT_PULLUP);  // Enable internal pull-up
+  gpio_pullup_en(GPIO_NUM_12);  // Force strong pull-up
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);  // Wake on LOW (button press)
+...
+```
+
+Why This Happens
+ESP32 wake-up pins are sensitive to noise (floating voltages, EMI, or button bounce).
+
+The 10kΩ resistor ensures a clean HIGH state, while the 100nF capacitor filters noise.
+
+If Issues Persist
+Use a multimeter to verify GPIO12 voltage:
+
+Should read ~3.3V when idle (no button press).
+
+Should read 0V when pressed.
+
+Shorten wires between the button and ESP32.
+
+Replace the tactile switch (defective switches can cause floating signals).
+
 ## Features
 
 ### Core Functionality

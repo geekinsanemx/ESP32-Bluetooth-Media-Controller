@@ -35,8 +35,9 @@ void setup() {
 
   initializeComponents();
   
-  // Configure wakeup - using GPIO12 (STOP button)
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);
+  pinMode(STOP, INPUT_PULLUP);  // Enable internal pull-up (backup)
+  gpio_pullup_en(GPIO_NUM_12);  // Force strong pull-up
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);  // Wake on LOW (button press)
   
   bleKeyboard.begin();
   Serial.println("Initialized - Waiting for Bluetooth connection...");
@@ -100,6 +101,8 @@ void handleConnectedState() {
     isConnected = true;
     lastActivityTime = millis();
     Serial.println("Bluetooth connected!");
+    delay(100);
+    digitalWrite(BLUE_LED, LOW);
   }
   
   if (millis() - lastConnectionCheck >= 30000) {
@@ -136,7 +139,7 @@ void handleDisconnectedState() {
 
 void enterDeepSleep() {
   Serial.println("Entering deep sleep...");
-  
+
   // Visual warning (3 red blinks)
   for(int i = 0; i < 3; i++) {
     digitalWrite(RED_LED, HIGH); delay(200);
