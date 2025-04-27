@@ -35,6 +35,8 @@ void setup() {
 
   initializeComponents();
 
+  pinMode(STOP, INPUT_PULLUP);  // Enable internal pull-up (backup)
+  gpio_pullup_en(GPIO_NUM_12);  // Force strong pull-up
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);  // Wake on LOW (button press)
 
   bleKeyboard.begin();
