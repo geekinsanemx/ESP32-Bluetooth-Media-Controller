@@ -34,7 +34,7 @@ void setup() {
   }
 
   initializeComponents();
-  
+
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, LOW);  // Wake on LOW (button press)
 
   bleKeyboard.begin();
