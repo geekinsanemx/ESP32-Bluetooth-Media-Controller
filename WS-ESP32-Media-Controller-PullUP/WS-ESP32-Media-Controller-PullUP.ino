@@ -17,7 +17,7 @@ Adafruit_NeoPixel pixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 #define NEXT       11
 #define STOP       12  // wake-up button (GPIO12)
 
-BleKeyboard bleKeyboard("RM-MC25C Media Controller", "Waveshare", 100);
+BleKeyboard bleKeyboard("RM-MC25C", "Waveshare", 100);
 
 // Deep sleep variables
 #define DEEP_SLEEP_TIMEOUT 120000 // 2 minutes in milliseconds (disconnected)
